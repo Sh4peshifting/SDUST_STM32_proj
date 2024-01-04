@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>云上智家</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.5.1.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      function updateTable() {
+        $.ajax({
+          url: '/data',
+          type: 'GET',
+          success: function (receivedData) {
+            var disp = receivedData.disp;
+            var warnings = receivedData.warnings;
+            var air = receivedData.air;
+
+            $('#time').text(receivedData.time);
+            $('#people').text(disp['people']);
+
+            if (disp['lock'] == 1) {
+              $('#lock_disp').text('上锁');
+            } else {
+              $('#lock_disp').text('开锁');
+            }
+            if (disp['light'] == 2) {
+              $('#light_disp').text('关');
+              $('#light_low').attr('disabled', true);
+              $('#light_mid').attr('disabled', true);
+              $('#light_high').attr('disabled', true);
+            } else {
+              if (disp['light'] == 1)
+                $('#light_disp').text('开');
+              if (disp['light'] == 3)
+                $('#light_disp').text('暗');
+              if (disp['light'] == 4)
+                $('#light_disp').text('较亮');
+              if (disp['light'] == 5)
+                $('#light_disp').text('亮');
+              if (disp['auto'] == 2) {
+                $('#light_low').removeAttr('disabled');
+                $('#light_mid').removeAttr('disabled');
+                $('#light_high').removeAttr('disabled');
+              }
+
+            }
+            if (disp['fan'] == 2) {
+              $('#fan_disp').text('关');
+              $('#speed_low').attr('disabled', true);
+              $('#speed_mid').attr('disabled', true);
+              $('#speed_high').attr('disabled', true);
+            } else {
+              if (disp['fan'] == 1)
+                $('#fan_disp').text('开');
+              if (disp['fan'] == 3)
+                $('#fan_disp').text('低速');
+              if (disp['fan'] == 4)
+                $('#fan_disp').text('中速');
+              if (disp['fan'] == 5)
+                $('#fan_disp').text('高速');
+              $('#speed_low').removeAttr('disabled');
+              $('#speed_mid').removeAttr('disabled');
+              $('#speed_high').removeAttr('disabled');
+            }
+            if (disp['alarm'] == 3) {
+              $('#alarm_disp').text('火灾警报');
+              $('#alarm_off').removeAttr('disabled');
+            } else if (disp['alarm'] == 1) {
+              $('#alarm_disp').text('入侵警报');
+              $('#alarm_off').removeAttr('disabled');
+            } else if (disp['alarm'] == 2) {
+              $('#alarm_disp').text('正常');
+              $('#alarm_off').attr('disabled', true);
+            } else if (disp['alarm'] == 4) {
+              $('#alarm_disp').text('入侵、火灾警报');
+              $('#alarm_off').removeAttr('disabled');
+            }
+
+            if (disp['auto'] == 1) {
+              $('#auto').text('关闭自动模式');
+
+              $('#light_on').attr('disabled', true);
+              $('#light_off').attr('disabled', true);
+              $('#light_low').attr('disabled', true);
+              $('#light_mid').attr('disabled', true);
+              $('#light_high').attr('disabled', true);
+
+            } else {
+              $('#auto').text('启用自动模式');
+              $('#light_on').removeAttr('disabled');
+              $('#light_off').removeAttr('disabled');
+            }
+
+
+            $('#temp_data').text(air['temp'] + '℃');
+            $('#hum_data').text(air['hum'] + '%');
+            $('#CH_data').text(air['CH'] + 'ppm');
+            $('#CO2_data').text(air['CO2'] + 'ppm');
+            $('#TVOC_data').text(air['TVOC'] + 'ppm');
+            $('#PM2_data').text(air['PM2'] + 'ug/m3');
+            $('#PM10_data').text(air['PM10'] + 'ug/m3');
+
+            if (warnings['temp'] == 1) {
+              $('#temp_warn').text('警告');
+              $('#temp_warn').removeClass('text-bg-primary');
+              $('#temp_warn').addClass('text-bg-warning');
+            } else {
+              $('#temp_warn').text('正常');
+              $('#temp_warn').removeClass('text-bg-warning');
+              $('#temp_warn').addClass('text-bg-primary');
+            }
+            if (warnings['hum'] == 1) {
+              $('#hum_warn').text('警告');
+              $('#hum_warn').removeClass('text-bg-primary');
+              $('#hum_warn').addClass('text-bg-warning');
+            } else {
+              $('#hum_warn').text('正常');
+              $('#hum_warn').removeClass('text-bg-warning');
+              $('#hum_warn').addClass('text-bg-primary');
+            }
+            if (warnings['CH'] == 1) {
+              $('#CH_warn').text('警告');
+              $('#CH_warn').removeClass('text-bg-primary');
+              $('#CH_warn').addClass('text-bg-warning');
+            } else {
+              $('#CH_warn').text('正常');
+              $('#CH_warn').removeClass('text-bg-warning');
+              $('#CH_warn').addClass('text-bg-primary');
+            }
+            if (warnings['CO2'] == 1) {
+              $('#CO2_warn').text('警告');
+              $('#CO2_warn').removeClass('text-bg-primary');
+              $('#CO2_warn').addClass('text-bg-warning');
+            } else {
+              $('#CO2_warn').text('正常');
+              $('#CO2_warn').removeClass('text-bg-warning');
+              $('#CO2_warn').addClass('text-bg-primary');
+            }
+            if (warnings['TVOC'] == 1) {
+              $('#TVOC_warn').text('警告');
+              $('#TVOC_warn').removeClass('text-bg-primary');
+              $('#TVOC_warn').addClass('text-bg-warning');
+            } else {
+              $('#TVOC_warn').text('正常');
+              $('#TVOC_warn').removeClass('text-bg-warning');
+              $('#TVOC_warn').addClass('text-bg-primary');
+            }
+            if (warnings['PM2'] == 1) {
+              $('#PM2_warn').text('警告');
+              $('#PM2_warn').removeClass('text-bg-primary');
+              $('#PM2_warn').addClass('text-bg-warning');
+            } else {
+              $('#PM2_warn').text('正常');
+              $('#PM2_warn').removeClass('text-bg-warning');
+              $('#PM2_warn').addClass('text-bg-primary');
+            }
+            if (warnings['PM10'] == 1) {
+              $('#PM10_warn').text('警告');
+              $('#PM10_warn').removeClass('text-bg-primary');
+              $('#PM10_warn').addClass('text-bg-warning');
+            } else {
+              $('#PM10_warn').text('正常');
+              $('#PM10_warn').removeClass('text-bg-warning');
+              $('#PM10_warn').addClass('text-bg-primary');
+            }
+          }
+        });
+      }
+      setInterval(updateTable, 1000);
+
+
+      var auto_flag = 0;
+      $('#auto').click(function () {
+        auto_flag++;
+        if (auto_flag == 2) {
+          auto_flag = 0;
+        }
+        if (auto_flag == 0) {
+          $.ajax({
+            url: '/auto_off',
+            type: 'GET',
+            success: function (receivedData) {
+              console.log(receivedData);
+            }
+          });
+        }
+        if (auto_flag == 1) {
+          $.ajax({
+            url: '/auto_on',
+            type: 'GET',
+            success: function (receivedData) {
+              console.log(receivedData);
+            }
+          });
+        }
+      });
+
+      $('#light_low').click(function () {
+        $.ajax({
+          url: '/light_low',
+          type: 'GET',
+          success: function (receivedData) {
+            console.log(receivedData);
+          }
+        });
+      });
+
+      $('#light_mid').click(function () {
+        $.ajax({
+          url: '/light_mid',
+          type: 'GET',
+          success: function (receivedData) {
+            console.log(receivedData);
+          }
+        });
+      });
+
+      $('#light_high').click(function () {
+        $.ajax({
+          url: '/light_high',
+          type: 'GET',
+          success: function (receivedData) {
+            console.log(receivedData);
+          }
+        });
+      });
+
+      $('#speed_low').click(function () {
+        $.ajax({
+          url: '/speed_low',
+          type: 'GET',
+          success: function (receivedData) {
+            console.log(receivedData);
+          }
+        });
+      });
+      $('#speed_mid').click(function () {
+        $.ajax({
+          url: '/speed_mid',
+          type: 'GET',
+          success: function (receivedData) {
+            console.log(receivedData);
+          }
+        });
+      });
+      $('#speed_high').click(function () {
+        $.ajax({
+          url: '/speed_high',
+          type: 'GET',
+          success: function (receivedData) {
+            console.log(receivedData);
+          }
+        });
+      });
+
+      var flag = {
+        'alarm': 0,
+        'light': 0,
+        'fan': 0,
+        'lock': 0
+      };
+      $('#unlock').click(function () {
+        flag['lock'] = 1;
+      });
+      $('#lock').click(function () {
+        flag['lock'] = 2;
+      });
+      $('#alarm_off').click(function () {
+        flag['alarm'] = 1;
+      });
+      $('#light_on').click(function () {
+        flag['light'] = 1;
+      });
+      $('#light_off').click(function () {
+        flag['light'] = 2;
+      });
+      $('#fan_on').click(function () {
+        flag['fan'] = 1;
+      });
+      $('#fan_off').click(function () {
+        flag['fan'] = 2;
+      });
+      $('#confirm').click(function () {
+        if (flag['lock'] == 1) {
+          $.ajax({
+            url: '/unlock',
+            type: 'GET',
+            success: function (receivedData) {
+              console.log(receivedData);
+            }
+          });
+        }
+        if (flag['lock'] == 2) {
+          $.ajax({
+            url: '/lock',
+            type: 'GET',
+            success: function (receivedData) {
+              console.log(receivedData);
+            }
+          });
+        }
+        if (flag['alarm'] == 1) {
+          $.ajax({
+            url: '/alarm_off',
+            type: 'GET',
+            success: function (receivedData) {
+              console.log(receivedData);
+            }
+          });
+        }
+        if (flag['light'] == 1) {
+          $.ajax({
+            url: '/light_on',
+            type: 'GET',
+            success: function (receivedData) {
+              console.log(receivedData);
+            }
+          });
+        }
+        if (flag['light'] == 2) {
+          $.ajax({
+            url: '/light_off',
+            type: 'GET',
+            success: function (receivedData) {
+              console.log(receivedData);
+            }
+          });
+        }
+        if (flag['fan'] == 1) {
+          $.ajax({
+            url: '/fan_on',
+            type: 'GET',
+            success: function (receivedData) {
+              console.log(receivedData);
+            }
+          });
+        }
+        if (flag['fan'] == 2) {
+          $.ajax({
+            url: '/fan_off',
+            type: 'GET',
+            success: function (receivedData) {
+              console.log(receivedData);
+            }
+          });
+        }
+        flag = {
+          'alarm': 0,
+          'light': 0,
+          'fan': 0,
+          'lock': 0
+        };
+      });
+    });
+  </script>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg fixed-top bg-body-tertiary shadow">
+    <div class="container">
+      <a class="navbar-brand" href="/"><svg xmlns="http://www.w3.org/2000/svg" width="30" height="30"
+          fill="currentColor" class="bi bi-house-gear" viewBox="0 0 16 16">
+          <path
+            d="M7.293 1.5a1 1 0 0 1 1.414 0L11 3.793V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v3.293l2.354 2.353a.5.5 0 0 1-.708.708L8 2.207l-5 5V13.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 2 13.5V8.207l-.646.647a.5.5 0 1 1-.708-.708L7.293 1.5Z" />
+          <path fill-rule="evenodd"
+            d="M11.886 9.46c.18-.613 1.048-.613 1.229 0l.043.148a.64.64 0 0 0 .921.382l.136-.074c.561-.306 1.175.308.87.869l-.075.136a.64.64 0 0 0 .382.92l.149.045c.612.18.612 1.048 0 1.229l-.15.043a.64.64 0 0 0-.38.921l.074.136c.305.561-.309 1.175-.87.87l-.136-.075a.64.64 0 0 0-.92.382l-.045.149c-.18.612-1.048.612-1.229 0l-.043-.15a.64.64 0 0 0-.921-.38l-.136.074c-.561.305-1.175-.309-.87-.87l.075-.136a.64.64 0 0 0-.382-.92l-.148-.044c-.613-.181-.613-1.049 0-1.23l.148-.043a.64.64 0 0 0 .382-.921l-.074-.136c-.306-.561.308-1.175.869-.87l.136.075a.64.64 0 0 0 .92-.382l.045-.148ZM14 12.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
+        </svg>
+        云上智家</a>
+    </div>
+  </nav>
+
+
+  <br><br><br>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-5 col-lg-4 order-md-last">
+        <h4 class="d-flex justify-content-between align-items-center mb-3">
+          <span>硬件控制</span>
+        </h4>
+        <div class="mb-3">
+          <div class="card  ">
+            <div class="card-body">
+              <h5 class="card-title">门禁</h5>
+              <div class="btn-group col-12 mx-auto" role="group" aria-label="Basic example">
+                <button id="unlock" type="button" class="btn btn-danger btn-lg button_lock" data-bs-toggle="modal"
+                  data-bs-target="#modal_msg">开锁</button>
+                <button id="lock" type="button" class="btn btn-primary btn-lg button_lock" data-bs-toggle="modal"
+                  data-bs-target="#modal_msg">上锁</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <div class="card  ">
+            <div class="card-body">
+              <h5 class="card-title">警报</h5>
+              <div class="btn-group col-12 mx-auto" role="group" aria-label="Basic example">
+                <button type="button" id="alarm_off" class="btn btn-danger btn-lg" data-bs-toggle="modal"
+                  data-bs-target="#modal_msg" disabled>解除</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <div class="card  ">
+            <div class="card-body">
+              <h5 class="card-title">灯光</h5>
+              <div class="btn-group col-12 mx-auto" role="group" aria-label="Basic example">
+                <button type="button" id="light_on" class="btn btn-light btn-lg" data-bs-toggle="modal"
+                  data-bs-target="#modal_msg">开灯</button>
+                <button type="button" id="light_off" class="btn btn-secondary btn-lg" data-bs-toggle="modal"
+                  data-bs-target="#modal_msg">关灯</button>
+              </div>
+              <h5 class="card-title">亮度</h5>
+              <div class="btn-group col-12" role="group" aria-label="Basic radio toggle button group">
+                <input type="radio" class="btn-check" name="btnradio1" id="light_low" autocomplete="off" checked
+                  disabled>
+                <label class="btn btn-outline-primary" for="light_low">暗</label>
+
+                <input type="radio" class="btn-check" name="btnradio1" id="light_mid" autocomplete="off" disabled>
+                <label class="btn btn-outline-primary" for="light_mid">中</label>
+
+                <input type="radio" class="btn-check" name="btnradio1" id="light_high" autocomplete="off" disabled>
+                <label class="btn btn-outline-primary" for="light_high">亮</label>
+              </div>
+              <br><br>
+              <div class="d-grid gap-2 col-12 mx-auto">
+                <button class="btn btn-outline-info" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#collapseLight" aria-expanded="false" aria-controls="collapseLight" id="auto">
+                  切换自动模式
+                </button>
+              </div>
+              <div class="collapse" id="collapseLight">
+                <div class="card card-body">
+                  <b>自动模式已启用</b>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <div class="card  ">
+            <div class="card-body">
+              <h5 class="card-title">风扇</h5>
+              <div class="btn-group col-12 mx-auto" role="group" aria-label="Basic example">
+                <button type="button" id="fan_on" class="btn btn-light btn-lg" data-bs-toggle="modal"
+                  data-bs-target="#modal_msg">打开</button>
+                <button type="button" id="fan_off" class="btn btn-secondary btn-lg" data-bs-toggle="modal"
+                  data-bs-target="#modal_msg">关闭</button>
+              </div>
+              <h5 class="card-title">风速</h5>
+              <div class="btn-group col-12" role="group" aria-label="Basic radio toggle button group">
+                <input type="radio" class="btn-check" name="btnradio" id="speed_low" autocomplete="off" checked
+                  disabled>
+                <label class="btn btn-outline-primary" for="speed_low">低</label>
+
+                <input type="radio" class="btn-check" name="btnradio" id="speed_mid" autocomplete="off" disabled>
+                <label class="btn btn-outline-primary" for="speed_mid">中</label>
+
+                <input type="radio" class="btn-check" name="btnradio" id="speed_high" autocomplete="off" disabled>
+                <label class="btn btn-outline-primary" for="speed_high">高</label>
+              </div>
+            </div>
+          </div>
+          <div class="modal fade" id="modal_msg" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="staticBackdropLabel">提示</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  是否确认操作？
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                  <button type="button" id="confirm" class="btn btn-primary" data-bs-dismiss="modal">确认</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="col-md-7 col-lg-8">
+        <h4 class="d-flex justify-content-between align-items-center mb-3">
+          <span>数据面板</span>
+        </h4>
+
+        <div class="card mb-3">
+          <div class="card-body">
+            <h5 class="card-title">概况</h5>
+            <div class="row">
+              <div class="col-md-9">
+                <div class="fs-2 mb-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-clock"
+                    viewBox="0 0 16 16">
+                    <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"></path>
+                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"></path>
+                  </svg>
+                  <span id="time"></span>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="fs-2 mb-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="59" height="50" fill="currentColor"
+                    class="bi bi-person" viewBox="0 0 16 16">
+                    <path
+                      d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664z" />
+                  </svg><span id="people"></span>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-3">
+                <div class="alert alert-danger" role="alert">
+                  <b>警报 <span id="alarm_disp">正常</span></b>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="alert alert-warning" role="alert">
+                  <b>门锁 <span id="lock_disp">上锁</span></b>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="alert alert-primary" role="alert">
+                  <b>灯光 <span id="light_disp">关</span></b>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="alert alert-info" role="alert">
+                  <b>风扇 <span id="fan_disp">关</span></b>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="mb-3">
+          <div class="card ">
+            <div class="card-body">
+              <h5 class="card-title" id='air'>当前空气质量</h5>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">指标</th>
+                    <th scope="col">数值</th>
+                    <th scope="col">提醒</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">1</th>
+                    <td>温度</td>
+                    <td id="temp_data">25</td>
+                    <td><span id="temp_warn" class="badge text-bg-primary">正常</span></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">2</th>
+                    <td>湿度</td>
+                    <td id="hum_data">30%</td>
+                    <td><span id="hum_warn" class="badge text-bg-primary">正常</span></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">3</th>
+                    <td>甲醛</td>
+                    <td id="CH_data">500ppm</td>
+                    <td><span id="CH_warn" class="badge text-bg-warning">警告</span></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">4</th>
+                    <td>二氧化碳</td>
+                    <td id="CO2_data">34ppm</td>
+                    <td><span id="CO2_warn" class="badge text-bg-primary">正常</span></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">5</th>
+                    <td>TVOC</td>
+                    <td id="TVOC_data">144ppm</td>
+                    <td><span id="TVOC_warn" class="badge text-bg-primary">正常</span></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">6</th>
+                    <td>PM2.5</td>
+                    <td id="PM2_data">21ppm</td>
+                    <td><span id="PM2_warn" class="badge text-bg-primary">正常</span></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">7</th>
+                    <td>PM10</td>
+                    <td id="PM10_data">122ppm</td>
+                    <td><span id="PM10_warn" class="badge text-bg-primary">正常</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>
